@@ -1,0 +1,152 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+#org { position: relative; width: 100%; height: 490px; overflow: hidden; }
+#svgl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.nd { position: absolute; border-radius: 8px; cursor: grab; user-select: none; font-family: var(--font-sans); }
+.nd:active { cursor: grabbing; }
+.ni { padding: 10px 14px; }
+.nm { font-size: 13px; font-weight: 500; }
+.nr { font-size: 11px; margin-top: 3px; }
+.bdg { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 8px; margin-top: 4px; }
+.new { background: #EAF3DE; color: #3B6D11; }
+.old { background: #E6F1FB; color: #185FA5; }
+.teal { background: #E1F5EE; border: 0.5px solid #1D9E75; }
+.teal .nm { color: #085041; } .teal .nr { color: #0F6E56; }
+.blue { background: #E6F1FB; border: 0.5px solid #378ADD; }
+.blue .nm { color: #0C447C; } .blue .nr { color: #185FA5; }
+.purp { background: #EEEDFE; border: 0.5px solid #7F77DD; }
+.purp .nm { color: #3C3489; } .purp .nr { color: #534AB7; }
+.gray { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); }
+.gray .nm { color: var(--color-text-primary); } .gray .nr { color: var(--color-text-secondary); }
+.dsh  { background: var(--color-background-primary); border: 1.5px dashed #B4B2A9; }
+.dsh  .nm { color: #888780; } .dsh .nr { color: #B4B2A9; }
+.hint { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: var(--color-text-tertiary); pointer-events: none; }
+</style>
+
+<div id="org">
+  <svg id="svgl" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <div class="nd teal" id="n-ceo" style="left:240px;top:28px;width:160px">
+    <div class="ni"><div class="nm">박가민 부장</div><div class="nr">센터장</div></div>
+  </div>
+
+  <div class="nd gray" id="n-senior" style="left:500px;top:108px;width:168px">
+    <div class="ni"><div class="nm">선임연구원</div><div class="nr">후보 : 안선엽</div></div>
+  </div>
+
+  <div class="nd blue" id="n-altum" style="left:40px;top:198px;width:145px">
+    <div class="ni"><div class="nm">알텀공장</div></div>
+  </div>
+
+  <div class="nd purp" id="n-bio" style="left:368px;top:198px;width:150px">
+    <div class="ni"><div class="nm">바이오센터</div></div>
+  </div>
+
+  <div class="nd blue" id="n-kim" style="left:16px;top:335px;width:108px">
+    <div class="ni"><div class="nm">김동수</div><div class="nr">사원</div></div>
+  </div>
+
+  <div class="nd blue" id="n-lee" style="left:138px;top:335px;width:108px">
+    <div class="ni"><div class="nm">이우림</div><div class="nr">사원</div></div>
+  </div>
+
+  <div class="nd dsh" id="n-to" style="left:260px;top:335px;width:108px">
+    <div class="ni"><div class="nm">추가 T/O</div><div class="nr">검토 중</div></div>
+  </div>
+
+  <div class="nd purp" id="n-park" style="left:362px;top:335px;width:112px">
+    <div class="ni"><div class="nm">박찬후</div><div class="nr">연구원</div><span class="bdg old">기존</span></div>
+  </div>
+
+  <div class="nd purp" id="n-choi" style="left:488px;top:335px;width:112px">
+    <div class="ni"><div class="nm">최욱</div><div class="nr">분석연구원</div><span class="bdg new">신규</span></div>
+  </div>
+
+  <div class="nd purp" id="n-parkm" style="left:614px;top:335px;width:112px">
+    <div class="ni"><div class="nm">박만지</div><div class="nr">연구원</div><span class="bdg new">신규</span></div>
+  </div>
+
+  <div class="hint">박스를 드래그해서 이동할 수 있어요</div>
+</div>
+
+<script>
+const svg = document.getElementById('svgl');
+const org = document.getElementById('org');
+
+function r(id) {
+  const el = document.getElementById(id);
+  return {
+    l: el.offsetLeft, r: el.offsetLeft + el.offsetWidth,
+    t: el.offsetTop,  b: el.offsetTop + el.offsetHeight,
+    cx: el.offsetLeft + el.offsetWidth / 2,
+    cy: el.offsetTop + el.offsetHeight / 2,
+  };
+}
+
+function line(d, dash) {
+  const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d', d);
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', dash ? '#B4B2A9' : '#9c9a92');
+  p.setAttribute('stroke-width', '0.8');
+  if (dash) p.setAttribute('stroke-dasharray', '5 3');
+  svg.appendChild(p);
+}
+
+function drawGroup(pid, kids) {
+  const p = r(pid);
+  const cs = kids.map(k => ({...k, rc: r(k.id)}));
+  const xs = cs.map(c => c.rc.cx);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minTop = Math.min(...cs.map(c => c.rc.t));
+  const midY = Math.round(p.b + (minTop - p.b) / 2);
+  // parent down to midY
+  line(`M${p.cx},${p.b} L${p.cx},${midY}`, false);
+  // horizontal bus
+  if (cs.length > 1) line(`M${minX},${midY} L${maxX},${midY}`, false);
+  // drops to each child
+  cs.forEach(c => line(`M${c.rc.cx},${midY} L${c.rc.cx},${c.rc.t}`, c.dash));
+}
+
+function drawSide(fid, tid) {
+  const f = r(fid), t = r(tid);
+  const x1 = f.r, y1 = f.cy, x2 = t.l, y2 = t.cy;
+  const mx = (x2 - x1) * 0.5;
+  line(`M${x1},${y1} C${x1+mx},${y1} ${x2-mx},${y2} ${x2},${y2}`, false);
+}
+
+function draw() {
+  svg.innerHTML = '';
+  drawGroup('n-ceo', [{id:'n-altum',dash:false},{id:'n-bio',dash:false}]);
+  drawSide('n-ceo','n-senior');
+  drawGroup('n-altum', [{id:'n-kim',dash:false},{id:'n-lee',dash:false},{id:'n-to',dash:true}]);
+  drawGroup('n-bio',  [{id:'n-park',dash:false},{id:'n-choi',dash:false},{id:'n-parkm',dash:false}]);
+}
+
+let drag = null, ox = 0, oy = 0;
+
+document.querySelectorAll('.nd').forEach(nd => {
+  const start = (cx, cy) => {
+    drag = nd; nd.style.zIndex = 99;
+    ox = cx - nd.offsetLeft; oy = cy - nd.offsetTop;
+  };
+  nd.addEventListener('mousedown', e => { e.preventDefault(); start(e.clientX, e.clientY); });
+  nd.addEventListener('touchstart', e => { e.preventDefault(); start(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+});
+
+const move = (cx, cy) => {
+  if (!drag) return;
+  const W = org.offsetWidth, H = org.offsetHeight;
+  drag.style.left = Math.max(0, Math.min(W - drag.offsetWidth,  cx - ox)) + 'px';
+  drag.style.top  = Math.max(0, Math.min(H - drag.offsetHeight, cy - oy)) + 'px';
+  draw();
+};
+const end = () => { if (drag) { drag.style.zIndex = ''; drag = null; } };
+
+document.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+document.addEventListener('mouseup', end);
+document.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+document.addEventListener('touchend', end);
+
+draw();
+</script>
