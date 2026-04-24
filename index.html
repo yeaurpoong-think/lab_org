@@ -63,7 +63,11 @@
   </div>
 
   <div class="nd purp" id="n-parkm" style="left:614px;top:335px;width:112px">
-    <div class="ni"><div class="nm">박만지</div><div class="nr">연구원</div><span class="bdg new">신규</span></div>
+    <div class="ni"><div class="nm">박민지</div><div class="nr">연구원</div><span class="bdg new">신규</span></div>
+  </div>
+
+  <div class="nd dsh" id="n-to2" style="left:740px;top:335px;width:112px">
+    <div class="ni"><div class="nm">추가 T/O</div><div class="nr">검토 중</div></div>
   </div>
 
   <div class="hint">박스를 드래그해서 이동할 수 있어요</div>
@@ -120,7 +124,7 @@ function draw() {
   drawGroup('n-ceo', [{id:'n-altum',dash:false},{id:'n-bio',dash:false}]);
   drawSide('n-ceo','n-senior');
   drawGroup('n-altum', [{id:'n-kim',dash:false},{id:'n-lee',dash:false},{id:'n-to',dash:true}]);
-  drawGroup('n-bio',  [{id:'n-park',dash:false},{id:'n-choi',dash:false},{id:'n-parkm',dash:false}]);
+  drawGroup('n-bio',  [{id:'n-park',dash:false},{id:'n-choi',dash:false},{id:'n-parkm',dash:false},{id:'n-to2',dash:true}]);
 }
 
 let drag = null, ox = 0, oy = 0;
