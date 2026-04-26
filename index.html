@@ -1,27 +1,37 @@
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-#org { position: relative; width: 100%; height: 490px; overflow: hidden; }
-#svgl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.nd { position: absolute; border-radius: 8px; cursor: grab; user-select: none; font-family: var(--font-sans); }
-.nd:active { cursor: grabbing; }
-.ni { padding: 10px 14px; }
-.nm { font-size: 13px; font-weight: 500; }
-.nr { font-size: 11px; margin-top: 3px; }
-.bdg { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 8px; margin-top: 4px; }
-.new { background: #EAF3DE; color: #3B6D11; }
-.old { background: #E6F1FB; color: #185FA5; }
-.teal { background: #E1F5EE; border: 0.5px solid #1D9E75; }
-.teal .nm { color: #085041; } .teal .nr { color: #0F6E56; }
-.blue { background: #E6F1FB; border: 0.5px solid #378ADD; }
-.blue .nm { color: #0C447C; } .blue .nr { color: #185FA5; }
-.purp { background: #EEEDFE; border: 0.5px solid #7F77DD; }
-.purp .nm { color: #3C3489; } .purp .nr { color: #534AB7; }
-.gray { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); }
-.gray .nm { color: var(--color-text-primary); } .gray .nr { color: var(--color-text-secondary); }
-.dsh  { background: var(--color-background-primary); border: 1.5px dashed #B4B2A9; }
-.dsh  .nm { color: #888780; } .dsh .nr { color: #B4B2A9; }
-.hint { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: var(--color-text-tertiary); pointer-events: none; }
-</style>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>조직도</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f5f4f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; }
+    #org { position: relative; width: 100%; height: 490px; overflow: hidden; }
+    #svgl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .nd { position: absolute; border-radius: 8px; cursor: grab; user-select: none; }
+    .nd:active { cursor: grabbing; }
+    .ni { padding: 10px 14px; }
+    .nm { font-size: 13px; font-weight: 500; }
+    .nr { font-size: 11px; margin-top: 3px; }
+    .bdg { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 8px; margin-top: 4px; }
+    .new  { background: #EAF3DE; color: #3B6D11; }
+    .old  { background: #E6F1FB; color: #185FA5; }
+    .cand { background: #FAEEDA; color: #854F0B; }
+    .teal { background: #E1F5EE; border: 0.5px solid #1D9E75; }
+    .teal .nm { color: #085041; } .teal .nr { color: #0F6E56; }
+    .blue { background: #E6F1FB; border: 0.5px solid #378ADD; }
+    .blue .nm { color: #0C447C; } .blue .nr { color: #185FA5; }
+    .purp { background: #EEEDFE; border: 0.5px solid #7F77DD; }
+    .purp .nm { color: #3C3489; } .purp .nr { color: #534AB7; }
+    .gray { background: #ffffff; border: 0.5px solid #d1d0c8; }
+    .gray .nm { color: #1a1a18; } .gray .nr { color: #5f5e5a; }
+    .dsh  { background: #ffffff; border: 1.5px dashed #B4B2A9; }
+    .dsh  .nm { color: #888780; } .dsh .nr { color: #B4B2A9; }
+    .hint { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: #B4B2A9; pointer-events: none; }
+  </style>
+</head>
+<body>
 
 <div id="org">
   <svg id="svgl" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -31,7 +41,7 @@
   </div>
 
   <div class="nd gray" id="n-senior" style="left:500px;top:108px;width:168px">
-    <div class="ni"><div class="nm">선임연구원</div><div class="nr">후보 : 안선엽</div></div>
+    <div class="ni"><div class="nm">선임연구원</div></div>
   </div>
 
   <div class="nd blue" id="n-altum" style="left:40px;top:198px;width:145px">
@@ -66,8 +76,8 @@
     <div class="ni"><div class="nm">박민지</div><div class="nr">연구원</div><span class="bdg new">신규</span></div>
   </div>
 
-  <div class="nd dsh" id="n-to2" style="left:740px;top:335px;width:112px">
-    <div class="ni"><div class="nm">추가 T/O</div><div class="nr">검토 중</div></div>
+  <div class="nd dsh" id="n-to2" style="left:740px;top:335px;width:120px">
+    <div class="ni"><div class="nm">추가 T/O</div><div class="nr">검토 중</div><span class="bdg cand">후보 : 안선엽</span></div>
   </div>
 
   <div class="hint">박스를 드래그해서 이동할 수 있어요</div>
@@ -104,11 +114,8 @@ function drawGroup(pid, kids) {
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minTop = Math.min(...cs.map(c => c.rc.t));
   const midY = Math.round(p.b + (minTop - p.b) / 2);
-  // parent down to midY
   line(`M${p.cx},${p.b} L${p.cx},${midY}`, false);
-  // horizontal bus
   if (cs.length > 1) line(`M${minX},${midY} L${maxX},${midY}`, false);
-  // drops to each child
   cs.forEach(c => line(`M${c.rc.cx},${midY} L${c.rc.cx},${c.rc.t}`, c.dash));
 }
 
@@ -154,3 +161,6 @@ document.addEventListener('touchend', end);
 
 draw();
 </script>
+
+</body>
+</html>
